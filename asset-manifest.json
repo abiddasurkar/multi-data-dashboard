@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/multi-data-dashboard/static/css/main.cea4a702.css",
+    "main.js": "/multi-data-dashboard/static/js/main.8ca39748.js",
+    "index.html": "/multi-data-dashboard/index.html",
+    "main.cea4a702.css.map": "/multi-data-dashboard/static/css/main.cea4a702.css.map",
+    "main.8ca39748.js.map": "/multi-data-dashboard/static/js/main.8ca39748.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.cea4a702.css",
+    "static/js/main.8ca39748.js"
+  ]
+}
