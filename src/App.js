@@ -132,7 +132,7 @@ const GridBackground = () => {
 };
 
 function App() {
-  const [selectedData, setSelectedData] = useState('crypto');
+  const [selectedData, setSelectedData] = useState('news');
   const [theme, setTheme] = useState('dark');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
