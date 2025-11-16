@@ -17,7 +17,8 @@ import {
   ChevronRight,
   Play,
   Pause,
-  AlertTriangle
+  AlertTriangle,
+  Zap
 } from 'lucide-react';
 
 // Comprehensive News Service with multiple API fallbacks
@@ -27,7 +28,7 @@ class NewsAPIService {
       // Guardian API (No auth required for test key)
       {
         name: 'guardian',
-        url: 'https://content.guardianapis.com/search?api-key=test&show-fields=thumbnail,headline,trailText,byline&page-size=15&order-by=newest',
+        url: 'https://content.guardianapis.com/search?api-key=test&show-fields=thumbnail,headline,trailText,byline&page-size=20&order-by=newest',
         requiresKey: false,
         transform: (data) => data.response.results.map(item => ({
           title: item.webTitle,
@@ -38,7 +39,8 @@ class NewsAPIService {
           source: { name: 'The Guardian' },
           author: item.fields?.byline?.replace('By ', '') || 'Staff Writer',
           category: 'general',
-          readTime: `${Math.floor(Math.random() * 5) + 3} min read`
+          readTime: `${Math.floor(Math.random() * 5) + 3} min read`,
+          priority: Math.random() > 0.7 ? 'high' : 'normal'
         }))
       },
       // RSS Feeds via rss2json (No auth)
@@ -55,7 +57,8 @@ class NewsAPIService {
           source: { name: 'BBC News' },
           author: 'BBC News',
           category: 'general',
-          readTime: `${Math.floor(Math.random() * 5) + 3} min read`
+          readTime: `${Math.floor(Math.random() * 5) + 3} min read`,
+          priority: Math.random() > 0.7 ? 'high' : 'normal'
         }))
       },
       {
@@ -71,7 +74,8 @@ class NewsAPIService {
           source: { name: 'Reuters' },
           author: 'Reuters',
           category: 'business',
-          readTime: `${Math.floor(Math.random() * 5) + 3} min read`
+          readTime: `${Math.floor(Math.random() * 5) + 3} min read`,
+          priority: Math.random() > 0.7 ? 'high' : 'normal'
         })) || []
       }
     ];
@@ -102,7 +106,12 @@ class NewsAPIService {
           "Blockchain Technology Transforms Supply Chains",
           "AR Glasses Set to Replace Smartphones",
           "Robotic Automation Hits Manufacturing Sector",
-          "Climate Tech Startups Secure Record Funding"
+          "Climate Tech Startups Secure Record Funding",
+          "Neural Networks Achieve Human-Level Understanding",
+          "Edge Computing Redefines Data Processing",
+          "IoT Devices Surpass 50 Billion Worldwide",
+          "Quantum Encryption Becomes Commercially Viable",
+          "Autonomous Drones Revolutionize Delivery Services"
         ],
         sources: ["TechCrunch", "Wired", "The Verge", "Ars Technica", "TechRadar"]
       },
@@ -117,7 +126,12 @@ class NewsAPIService {
           "Mergers and Acquisitions Hit Record Levels",
           "Economic Growth Exceeds Projections",
           "Green Investments Surge by 150%",
-          "Corporate ESG Initiatives Drive Change"
+          "Corporate ESG Initiatives Drive Change",
+          "Digital Payments Overtake Traditional Methods",
+          "E-commerce Growth Accelerates Post-Pandemic",
+          "Sustainable Investing Reaches $5 Trillion",
+          "Global Trade Agreements Foster Economic Cooperation",
+          "Business Travel Returns to Pre-pandemic Levels"
         ],
         sources: ["Bloomberg", "Financial Times", "Wall Street Journal", "Forbes", "Business Insider"]
       },
@@ -132,7 +146,12 @@ class NewsAPIService {
           "Medical Research Offers Cancer Breakthrough",
           "Climate Models Predict Faster Warming",
           "Archaeological Find Rewrites Human History",
-          "Physics Experiment Confirms Theory"
+          "Physics Experiment Confirms Theory",
+          "Ocean Cleanup Initiative Removes Million Tons of Plastic",
+          "Artificial Photosynthesis Creates Clean Energy",
+          "Gene Therapy Shows Promise for Aging Reversal",
+          "Antarctic Research Reveals Climate Insights",
+          "Space Mining Becomes Technically Feasible"
         ],
         sources: ["Nature", "Science Magazine", "New Scientist", "Scientific American", "NASA"]
       },
@@ -147,7 +166,12 @@ class NewsAPIService {
           "Global Health Initiative Saves Millions",
           "Wearable Tech Predicts Health Issues",
           "Nutrition Science Debunks Popular Myths",
-          "Healthcare Accessibility Improves Globally"
+          "Healthcare Accessibility Improves Globally",
+          "Personalized Medicine Revolutionizes Treatments",
+          "AI Diagnostics Outperform Human Doctors",
+          "Global Life Expectancy Reaches New High",
+          "Mental Health Apps Show Significant Benefits",
+          "Preventive Healthcare Saves Billions Annually"
         ],
         sources: ["WebMD", "Healthline", "Medical News Today", "WHO", "CDC"]
       }
@@ -156,7 +180,7 @@ class NewsAPIService {
     return Object.entries(categories).flatMap(([category, data]) => 
       data.titles.map((title, index) => ({
         title,
-        description: `Breaking news in ${category}: ${title}. Researchers and industry experts discuss the profound implications and future developments in this rapidly evolving field that could change our daily lives.`,
+        description: `Breaking news in ${category}: ${title}. Researchers and industry experts discuss the profound implications and future developments in this rapidly evolving field that could change our daily lives. This development represents a significant milestone that could reshape entire industries and create new opportunities for innovation and growth across multiple sectors.`,
         url: `https://example.com/news/${category}/${index}`,
         image: this.getFallbackImage(),
         publishedAt: new Date(Date.now() - Math.random() * 86400000 * 7).toISOString(),
@@ -164,13 +188,14 @@ class NewsAPIService {
         author: ['Dr. Sarah Chen', 'Prof. Michael Rodriguez', 'Dr. Emily Watson', 'James Wilson'][Math.floor(Math.random() * 4)],
         category,
         trending: Math.random() > 0.8,
+        priority: Math.random() > 0.7 ? 'high' : 'normal',
         readTime: `${Math.floor(Math.random() * 5) + 3} min read`,
         views: Math.floor(Math.random() * 10000)
       }))
     );
   }
 
-  async fetchNews(category = 'technology') {
+  async fetchNews(category = 'all') {
     const errors = [];
     
     // Try all real APIs sequentially
@@ -190,15 +215,14 @@ class NewsAPIService {
           if (transformed && transformed.length > 0) {
             console.log(`✅ Success from ${api.name}: ${transformed.length} articles`);
             
-            // Filter by category if not 'all'
-            const filtered = category === 'all' 
-              ? transformed 
-              : transformed.filter(article => 
-                  article.category === category || 
-                  article.source.name.toLowerCase().includes(category)
-                );
+            // Sort by priority and date
+            const sorted = transformed.sort((a, b) => {
+              if (a.priority === 'high' && b.priority !== 'high') return -1;
+              if (b.priority === 'high' && a.priority !== 'high') return 1;
+              return new Date(b.publishedAt) - new Date(a.publishedAt);
+            });
             
-            return filtered.slice(0, 15);
+            return sorted.slice(0, 20);
           }
         }
       } catch (error) {
@@ -210,10 +234,17 @@ class NewsAPIService {
 
     // All APIs failed, use mock data
     console.log('🔄 All APIs failed, using mock data');
-    const filteredMock = this.mockData.filter(article => 
-      category === 'all' || article.category === category
-    );
-    return filteredMock.slice(0, 15);
+    const allMockData = [...this.mockData].sort((a, b) => {
+      if (a.priority === 'high' && b.priority !== 'high') return -1;
+      if (b.priority === 'high' && a.priority !== 'high') return 1;
+      return new Date(b.publishedAt) - new Date(a.publishedAt);
+    });
+    
+    const filteredMock = category === 'all' 
+      ? allMockData 
+      : allMockData.filter(article => article.category === category);
+    
+    return filteredMock.slice(0, 20);
   }
 }
 
@@ -221,10 +252,9 @@ const NewsView = () => {
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState('technology');
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const [apiStatus, setApiStatus] = useState('checking');
   const [refreshing, setRefreshing] = useState(false);
-  const [viewMode, setViewMode] = useState('grid');
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [autoPlay, setAutoPlay] = useState(true);
   const [maintenanceMode, setMaintenanceMode] = useState(false);
@@ -234,14 +264,14 @@ const NewsView = () => {
   const newsService = useRef(new NewsAPIService()).current;
 
   const categories = [
-    { id: 'technology', name: 'Technology', icon: '💻', color: 'from-blue-500 to-cyan-500', bgColor: 'bg-blue-500' },
+    { id: 'all', name: 'All News', icon: '🌐', color: 'from-blue-500 to-cyan-500', bgColor: 'bg-blue-500' },
+    { id: 'technology', name: 'Technology', icon: '💻', color: 'from-purple-500 to-pink-500', bgColor: 'bg-purple-500' },
     { id: 'business', name: 'Business', icon: '💼', color: 'from-green-500 to-emerald-500', bgColor: 'bg-green-500' },
-    { id: 'science', name: 'Science', icon: '🔬', color: 'from-purple-500 to-pink-500', bgColor: 'bg-purple-500' },
-    { id: 'health', name: 'Health', icon: '🏥', color: 'from-red-500 to-orange-500', bgColor: 'bg-red-500' },
-    { id: 'all', name: 'All News', icon: '🌐', color: 'from-gray-500 to-slate-500', bgColor: 'bg-gray-500' }
+    { id: 'science', name: 'Science', icon: '🔬', color: 'from-orange-500 to-red-500', bgColor: 'bg-orange-500' },
+    { id: 'health', name: 'Health', icon: '🏥', color: 'from-teal-500 to-blue-500', bgColor: 'bg-teal-500' }
   ];
 
-  const fetchNews = useCallback(async (category = 'technology') => {
+  const fetchNews = useCallback(async (category = 'all') => {
     try {
       setLoading(true);
       setError(null);
@@ -264,10 +294,17 @@ const NewsView = () => {
       setMaintenanceMode(true);
       
       // Final emergency fallback
-      const emergencyData = newsService.mockData
-        .filter(article => category === 'all' || article.category === category)
-        .slice(0, 8);
-      setNews(emergencyData);
+      const allMockData = [...newsService.mockData].sort((a, b) => {
+        if (a.priority === 'high' && b.priority !== 'high') return -1;
+        if (b.priority === 'high' && a.priority !== 'high') return 1;
+        return new Date(b.publishedAt) - new Date(a.publishedAt);
+      });
+      
+      const emergencyData = category === 'all' 
+        ? allMockData 
+        : allMockData.filter(article => article.category === category);
+      
+      setNews(emergencyData.slice(0, 15));
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -279,7 +316,7 @@ const NewsView = () => {
     if (autoPlay && news.length > 0) {
       autoPlayRef.current = setInterval(() => {
         setCarouselIndex((prev) => (prev + 1) % Math.min(news.length, 5));
-      }, 4000);
+      }, 5000);
     }
 
     return () => {
@@ -340,13 +377,12 @@ const NewsView = () => {
       }
     } else {
       navigator.clipboard.writeText(article.url);
-      // In a real app, show a toast notification
     }
   };
 
   // Featured carousel items (top 5 news)
   const featuredNews = news.slice(0, 5);
-  const gridNews = news.slice(5);
+  const remainingNews = news.slice(5);
 
   // Maintenance Mode Component
   if (maintenanceMode && news.length === 0) {
@@ -392,7 +428,7 @@ const NewsView = () => {
           ))}
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1,2,3,4,5,6].map(i => (
+          {[1,2,3,4,5,6,7,8,9].map(i => (
             <div key={i} className="bg-gray-300 rounded-2xl h-96"></div>
           ))}
         </div>
@@ -417,7 +453,7 @@ const NewsView = () => {
             </h1>
           </div>
           <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
-            Your gateway to real-time news from trusted global sources
+            Stay informed with the latest headlines from trusted sources worldwide
           </p>
         </div>
 
@@ -481,6 +517,17 @@ const NewsView = () => {
           ))}
         </div>
 
+        {/* Breaking News Banner */}
+        {news.length > 0 && (
+          <div className="bg-gradient-to-r from-red-500 to-orange-500 rounded-2xl p-4 text-white shadow-lg">
+            <div className="flex items-center justify-center space-x-3">
+              <Zap className="w-5 h-5 animate-pulse" />
+              <span className="font-semibold">Breaking News:</span>
+              <span className="truncate">{news[0]?.title}</span>
+            </div>
+          </div>
+        )}
+
         {/* Featured News Carousel */}
         {featuredNews.length > 0 && (
           <div className="relative bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border border-slate-200/50 dark:border-slate-700/50">
@@ -524,6 +571,14 @@ const NewsView = () => {
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                         <div className="absolute bottom-4 left-4 right-4">
                           <div className="flex items-center space-x-2 mb-2">
+                            <div className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                              article.category === 'technology' ? 'bg-blue-500' :
+                              article.category === 'business' ? 'bg-green-500' :
+                              article.category === 'science' ? 'bg-orange-500' :
+                              'bg-teal-500'
+                            } text-white`}>
+                              {article.category.charAt(0).toUpperCase() + article.category.slice(1)}
+                            </div>
                             <div className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
                               {article.source.name}
                             </div>
@@ -611,20 +666,37 @@ const NewsView = () => {
           </div>
         )}
 
-        {/* Latest News Grid */}
-        {gridNews.length > 0 && (
+        {/* All News Grid */}
+        {news.length > 0 && (
           <div className="space-y-6">
             <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200 flex items-center space-x-3">
               <Newspaper className="w-6 h-6 text-blue-500" />
-              <span>Latest News</span>
+              <span>All News</span>
+              <span className="text-sm font-normal text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded-full">
+                {news.length} articles
+              </span>
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {gridNews.map((article, index) => (
+              {news.map((article, index) => (
                 <div
                   key={index}
-                  className="group bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 overflow-hidden hover:shadow-2xl transition-all duration-500 hover:scale-105"
+                  className={`group bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 overflow-hidden hover:shadow-2xl transition-all duration-500 ${
+                    index < 5 ? 'hover:scale-105' : 'hover:scale-102'
+                  } relative`}
                 >
+                  {index < 3 && (
+                    <div className="absolute top-4 left-4 z-10">
+                      <div className={`px-2 py-1 rounded-full text-xs font-bold text-white ${
+                        index === 0 ? 'bg-red-500' :
+                        index === 1 ? 'bg-orange-500' :
+                        'bg-yellow-500'
+                      }`}>
+                        {index === 0 ? 'HOT' : index === 1 ? 'TRENDING' : 'POPULAR'}
+                      </div>
+                    </div>
+                  )}
+                  
                   {/* Image */}
                   <div className="relative h-48 overflow-hidden">
                     <img
@@ -637,7 +709,7 @@ const NewsView = () => {
                       {article.source.name}
                     </div>
                     {article.trending && (
-                      <div className="absolute top-4 left-4 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-semibold flex items-center space-x-1">
+                      <div className="absolute top-12 right-4 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-semibold flex items-center space-x-1">
                         <TrendingUp className="w-3 h-3" />
                         <span>Trending</span>
                       </div>
@@ -646,6 +718,21 @@ const NewsView = () => {
 
                   {/* Content */}
                   <div className="p-6 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                        article.category === 'technology' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300' :
+                        article.category === 'business' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' :
+                        article.category === 'science' ? 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300' :
+                        'bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300'
+                      }`}>
+                        {article.category.charAt(0).toUpperCase() + article.category.slice(1)}
+                      </span>
+                      <div className="flex items-center space-x-1 text-xs text-slate-500 dark:text-slate-400">
+                        <Clock className="w-3 h-3" />
+                        <span>{article.readTime}</span>
+                      </div>
+                    </div>
+
                     <h3 className="font-bold text-lg text-slate-800 dark:text-slate-200 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                       {article.title}
                     </h3>
