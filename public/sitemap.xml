@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset 
+    xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+    xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <!-- Home / Dashboard -->
+  <url>
+    <loc>https://abiddasurkar.github.io/weather-dashboard/</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- If you plan to add more pages in React Router, list them here -->
+  <!-- Example:
+  <url>
+    <loc>https://abiddasurkar.github.io/weather-dashboard/forecast</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  -->
+
+</urlset>
