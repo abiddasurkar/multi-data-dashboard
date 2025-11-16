@@ -7,32 +7,134 @@ import {
   Globe,
   Github,
   Linkedin,
-  ChevronRight,
-  Newspaper,
-  Sparkles,
-  Zap,
-  LayoutDashboard,
   Menu,
   X,
-  Sun,
-  Moon,
-  Cpu,
-  BarChart3,
-  Satellite
+  Newspaper,
+  Zap,
+  Bell
 } from 'lucide-react';
 
-// Components
+// Components (these would be imported from actual component files)
 import CryptoView from './components/CryptoView';
 import CovidView from './components/CovidView';
 import WeatherView from './components/WeatherView';
 import CountriesView from './components/CountriesView';
 import NewsView from './components/NewsView';
 
+// Unique Artistic Color Scheme - Consistent Across Dashboard
+const designSystem = {
+  primary: 'from-orange-400 via-rose-500 to-pink-600',
+  secondary: 'from-cyan-400 via-blue-500 to-indigo-600',
+  accent: 'from-emerald-400 via-teal-500 to-cyan-600',
+  dark: 'from-slate-900 via-purple-900 to-slate-900',
+  glow: 'from-orange-500 to-pink-500',
+  glowCyan: 'from-cyan-500 to-blue-500',
+  text: {
+    primary: 'text-orange-300',
+    secondary: 'text-cyan-300',
+    accent: 'text-emerald-300'
+  }
+};
+
+// Animated Background with Unique Artistic Elements
+const ArtisticBackground = () => {
+  return (
+    <div className="fixed inset-0 overflow-hidden pointer-events-none">
+      {/* Primary Gradient Orb - Orange/Rose */}
+      <motion.div
+        className={`absolute w-96 h-96 bg-gradient-to-br ${designSystem.primary} rounded-full blur-3xl opacity-25`}
+        animate={{
+          x: [0, 150, -100, 0],
+          y: [0, -150, 100, 0],
+        }}
+        transition={{
+          duration: 20,
+          repeat: Infinity,
+          ease: 'easeInOut'
+        }}
+        style={{ top: '-5%', right: '-10%' }}
+      />
+      
+      {/* Secondary Gradient Orb - Cyan/Blue */}
+      <motion.div
+        className={`absolute w-80 h-80 bg-gradient-to-br ${designSystem.secondary} rounded-full blur-3xl opacity-20`}
+        animate={{
+          x: [-150, 50, 150, -150],
+          y: [50, -100, 0, 50],
+        }}
+        transition={{
+          duration: 25,
+          repeat: Infinity,
+          ease: 'easeInOut'
+        }}
+        style={{ bottom: '-10%', left: '-5%' }}
+      />
+
+      {/* Tertiary Gradient Orb - Emerald/Teal */}
+      <motion.div
+        className={`absolute w-72 h-72 bg-gradient-to-br ${designSystem.accent} rounded-full blur-3xl opacity-15`}
+        animate={{
+          x: [100, -100, 50, 100],
+          y: [-50, 100, -100, -50],
+        }}
+        transition={{
+          duration: 22,
+          repeat: Infinity,
+          ease: 'easeInOut'
+        }}
+        style={{ top: '50%', right: '10%' }}
+      />
+
+      {/* Floating Particles */}
+      {[...Array(20)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute w-1.5 h-1.5 rounded-full opacity-40"
+          style={{
+            background: i % 3 === 0 
+              ? 'linear-gradient(45deg, #fb7185, #f97316)' 
+              : i % 3 === 1 
+              ? 'linear-gradient(45deg, #06b6d4, #3b82f6)'
+              : 'linear-gradient(45deg, #10b981, #14b8a6)',
+            left: Math.random() * 100 + '%',
+            top: Math.random() * 100 + '%'
+          }}
+          animate={{
+            y: [0, -150],
+            opacity: [0.4, 0],
+            x: Math.sin(i) * 100
+          }}
+          transition={{
+            duration: Math.random() * 5 + 4,
+            repeat: Infinity,
+            ease: 'easeOut'
+          }}
+        />
+      ))}
+    </div>
+  );
+};
+
+// Subtle Grid Background
+const GridBackground = () => {
+  return (
+    <div className="fixed inset-0 opacity-5 pointer-events-none">
+      <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" strokeWidth="0.5"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#grid)" />
+      </svg>
+    </div>
+  );
+};
+
 function App() {
   const [selectedData, setSelectedData] = useState('crypto');
   const [theme, setTheme] = useState('dark');
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     if (theme === 'dark') {
@@ -42,434 +144,336 @@ function App() {
     }
   }, [theme]);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   const dataOptions = [
     { 
       id: 'crypto', 
       name: 'Cryptocurrency', 
       icon: TrendingUp,
-      description: 'Real-time market data',
-      component: CryptoView,
-      gradient: 'from-purple-500 to-pink-500',
-      bgGradient: 'from-purple-500/10 to-pink-500/10',
-      color: 'text-purple-400'
+      description: 'Real-time crypto market data',
+      component: CryptoView
     },
     { 
       id: 'covid', 
       name: 'COVID-19 Stats', 
       icon: Activity,
-      description: 'Global health data',
-      component: CovidView,
-      gradient: 'from-red-500 to-orange-500',
-      bgGradient: 'from-red-500/10 to-orange-500/10',
-      color: 'text-red-400'
+      description: 'Global health metrics',
+      component: CovidView
     },
     { 
       id: 'weather', 
-      name: 'Weather', 
+      name: 'Weather Forecast', 
       icon: Cloud,
-      description: 'Forecast & conditions',
-      component: WeatherView,
-      gradient: 'from-blue-500 to-cyan-500',
-      bgGradient: 'from-blue-500/10 to-cyan-500/10',
-      color: 'text-blue-400'
+      description: 'Live weather conditions',
+      component: WeatherView
     },
     { 
       id: 'countries', 
-      name: 'Countries', 
+      name: 'Countries Data', 
       icon: Globe,
-      description: 'Global demographics',
-      component: CountriesView,
-      gradient: 'from-green-500 to-emerald-500',
-      bgGradient: 'from-green-500/10 to-emerald-500/10',
-      color: 'text-green-400'
+      description: 'World population data',
+      component: CountriesView
     },
     { 
       id: 'news', 
       name: 'Tech News', 
       icon: Newspaper,
-      description: 'Latest headlines',
-      component: NewsView,
-      gradient: 'from-indigo-500 to-purple-500',
-      bgGradient: 'from-indigo-500/10 to-purple-500/10',
-      color: 'text-indigo-400'
+      description: 'Latest tech headlines',
+      component: NewsView
     }
   ];
 
   const currentOption = dataOptions.find(opt => opt.id === selectedData);
   const CurrentComponent = currentOption.component;
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.5,
-        ease: "easeOut"
-      }
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20 dark:from-slate-900 dark:via-blue-900/20 dark:to-purple-900/10 transition-all duration-500">
-      {/* Animated Background Elements */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-300/20 dark:bg-purple-600/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-300/20 dark:bg-blue-600/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-cyan-300/10 dark:bg-cyan-600/5 rounded-full blur-3xl animate-pulse delay-500"></div>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 overflow-hidden">
+      {/* Animated Artistic Background */}
+      <ArtisticBackground />
+      <GridBackground />
 
-      {/* Header */}
-      <motion.header 
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          isScrolled 
-            ? 'backdrop-blur-xl bg-white/80 dark:bg-slate-900/80 border-b border-slate-200/50 dark:border-slate-700/50 shadow-lg' 
-            : 'backdrop-blur-lg bg-white/60 dark:bg-slate-900/60'
-        }`}
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            {/* Logo */}
-            <motion.div 
-              className="flex items-center space-x-3"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              <button
-                onClick={() => setSidebarOpen(true)}
-                className="p-2 rounded-xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border border-slate-200/50 dark:border-slate-700/50 hover:shadow-lg transition-all lg:hidden"
-              >
-                <Menu className="w-5 h-5 text-slate-600 dark:text-slate-400" />
-              </button>
-              
-              <div className="relative">
-                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 via-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center shadow-2xl">
-                  <LayoutDashboard className="w-6 h-6 text-white" />
-                </div>
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white dark:border-slate-900 animate-pulse"></div>
-              </div>
-              
-              <div>
-                <h1 className="text-xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
-                  Nexus Dashboard
-                </h1>
-                <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center">
-                  <Sparkles className="w-3 h-3 mr-1" />
-                  Real-time Analytics Platform
-                </p>
-              </div>
-            </motion.div>
-
-            {/* Theme Toggle & Social Links */}
-            <motion.div 
-              className="flex items-center space-x-3"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              <button
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="p-3 rounded-xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border border-slate-200/50 dark:border-slate-700/50 hover:shadow-lg transition-all group"
-                title="Toggle theme"
-              >
-                {theme === 'dark' ? (
-                  <Sun className="w-5 h-5 text-orange-500 group-hover:scale-110 transition-transform" />
-                ) : (
-                  <Moon className="w-5 h-5 text-blue-500 group-hover:scale-110 transition-transform" />
-                )}
-              </button>
-              
-              <div className="flex items-center space-x-2">
-                <a
-                  href="https://github.com/abiddasurkar"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-3 rounded-xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border border-slate-200/50 dark:border-slate-700/50 hover:shadow-lg transition-all group"
-                  title="GitHub"
-                >
-                  <Github className="w-5 h-5 text-slate-600 dark:text-slate-400 group-hover:scale-110 transition-transform" />
-                </a>
-                <a
-                  href="https://www.linkedin.com/in/abiddasurkar"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-3 rounded-xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border border-slate-200/50 dark:border-slate-700/50 hover:shadow-lg transition-all group hidden sm:flex"
-                  title="LinkedIn"
-                >
-                  <Linkedin className="w-5 h-5 text-slate-600 dark:text-slate-400 group-hover:scale-110 transition-transform" />
-                </a>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </motion.header>
-
-      {/* Sidebar */}
-      <motion.div
-        className={`fixed inset-y-0 left-0 z-50 w-80 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-r border-slate-200/50 dark:border-slate-700/50 transform transition-transform duration-500 ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } lg:translate-x-0 lg:static lg:inset-0`}
-        initial={false}
-      >
-        <div className="flex flex-col h-full">
+      <div className="relative z-10 flex h-screen">
+        {/* Sidebar */}
+        <motion.aside
+          initial={{ x: -280 }}
+          animate={{ x: 0 }}
+          transition={{ type: 'spring', damping: 20 }}
+          className="hidden lg:flex flex-col w-72 bg-gradient-to-b from-slate-950/95 via-slate-900/95 to-slate-950/95 backdrop-blur-2xl border-r border-orange-500/20"
+        >
           {/* Sidebar Header */}
-          <div className="p-6 border-b border-slate-200/50 dark:border-slate-700/50">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200">
-                Data Modules
-              </h2>
-              <button
-                onClick={() => setSidebarOpen(false)}
-                className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors lg:hidden"
+          <div className="p-6 border-b border-orange-500/20">
+            <motion.div 
+              className="flex items-center space-x-3 mb-2"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+            >
+              <motion.div 
+                className={`w-12 h-12 bg-gradient-to-br ${designSystem.primary} rounded-xl flex items-center justify-center shadow-2xl shadow-orange-500/50`}
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                whileTap={{ scale: 0.95 }}
               >
-                <X className="w-4 h-4 text-slate-600 dark:text-slate-400" />
-              </button>
-            </div>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
-              Select a data module to explore
-            </p>
+                <Zap className="w-7 h-7 text-white" />
+              </motion.div>
+              <div>
+                <h2 className="text-xl font-bold bg-gradient-to-r from-orange-300 to-pink-300 bg-clip-text text-transparent">Nexus</h2>
+                <p className="text-xs text-slate-400">Analytics Engine</p>
+              </div>
+            </motion.div>
           </div>
 
-          {/* Navigation Items */}
-          <nav className="flex-1 p-6 space-y-2">
-            <motion.div
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-              className="space-y-2"
-            >
-              {dataOptions.map((option, index) => (
-                <motion.button
-                  key={option.id}
-                  variants={itemVariants}
-                  onClick={() => {
-                    setSelectedData(option.id);
-                    setSidebarOpen(false);
-                  }}
-                  className={`w-full flex items-center space-x-4 p-4 rounded-2xl transition-all duration-300 group ${
-                    selectedData === option.id
-                      ? `bg-gradient-to-r ${option.bgGradient} border border-${option.color}/20 shadow-lg`
-                      : 'bg-white/50 dark:bg-slate-800/50 hover:bg-white/80 dark:hover:bg-slate-700/80 border border-slate-200/50 dark:border-slate-700/50 hover:shadow-md'
-                  }`}
-                >
-                  <div className={`p-3 rounded-xl ${
-                    selectedData === option.id
-                      ? `bg-gradient-to-r ${option.gradient} text-white shadow-lg`
-                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 group-hover:scale-110 transition-transform'
-                  }`}>
-                    <option.icon className="w-5 h-5" />
-                  </div>
-                  
-                  <div className="flex-1 text-left">
-                    <h3 className={`font-semibold transition-colors ${
-                      selectedData === option.id
-                        ? 'text-slate-800 dark:text-slate-200'
-                        : 'text-slate-700 dark:text-slate-300 group-hover:text-slate-800 dark:group-hover:text-slate-200'
-                    }`}>
-                      {option.name}
-                    </h3>
-                    <p className={`text-sm transition-colors ${
-                      selectedData === option.id
-                        ? 'text-slate-600 dark:text-slate-400'
-                        : 'text-slate-500 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-400'
-                    }`}>
-                      {option.description}
-                    </p>
-                  </div>
+          {/* Navigation */}
+          <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+            {dataOptions.map((option, idx) => (
+              <motion.button
+                key={option.id}
+                onClick={() => {
+                  setSelectedData(option.id);
+                  setMobileMenuOpen(false);
+                }}
+                whileHover={{ x: 8 }}
+                whileTap={{ scale: 0.98 }}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: idx * 0.08 }}
+                className={`w-full flex items-center space-x-4 px-4 py-3 rounded-xl transition-all relative group overflow-hidden ${
+                  selectedData === option.id
+                    ? 'text-white'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                {/* Gradient Background on Active */}
+                {selectedData === option.id && (
+                  <motion.div
+                    layoutId="active-bg"
+                    className={`absolute inset-0 bg-gradient-to-r ${designSystem.primary} opacity-30`}
+                    initial={false}
+                  />
+                )}
+                
+                {/* Border glow on active */}
+                {selectedData === option.id && (
+                  <div className="absolute inset-0 rounded-xl border-2 border-transparent bg-gradient-to-r from-orange-500 to-pink-500 bg-clip-padding pointer-events-none opacity-50" />
+                )}
+                
+                <motion.div className="relative z-10">
+                  <option.icon className="w-5 h-5 flex-shrink-0" />
+                </motion.div>
 
-                  <ChevronRight className={`w-4 h-4 transition-all ${
-                    selectedData === option.id
-                      ? `text-${option.color} transform scale-125`
-                      : 'text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300'
-                  }`} />
-                </motion.button>
-              ))}
-            </motion.div>
+                <div className="text-left flex-1 relative z-10">
+                  <p className="font-semibold text-sm">{option.name}</p>
+                  <p className="text-xs opacity-70">{option.description}</p>
+                </div>
+
+                {selectedData === option.id && (
+                  <motion.div 
+                    className="w-2.5 h-2.5 bg-gradient-to-br from-orange-400 to-pink-500 rounded-full relative z-10"
+                    animate={{ scale: [1, 1.3, 1], opacity: [1, 0.8, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  />
+                )}
+              </motion.button>
+            ))}
           </nav>
 
           {/* Sidebar Footer */}
-          <div className="p-6 border-t border-slate-200/50 dark:border-slate-700/50">
-            <div className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 rounded-2xl p-4 border border-purple-500/20">
-              <div className="flex items-center space-x-3">
-                <Zap className="w-5 h-5 text-purple-500" />
-                <div>
-                  <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
-                    Live Data
-                  </p>
-                  <p className="text-xs text-slate-600 dark:text-slate-400">
-                    Updated in real-time
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Main Content */}
-      <div className="lg:pl-80">
-        <motion.main 
-          className="min-h-screen pt-16"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          {/* Content Header */}
-          <div className="border-b border-slate-200/50 dark:border-slate-700/50 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-              <motion.div 
-                className="flex items-center space-x-4"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-              >
-                <div className={`p-3 rounded-2xl bg-gradient-to-r ${currentOption.bgGradient} border border-${currentOption.color}/20`}>
-                  <currentOption.icon className={`w-6 h-6 ${currentOption.color}`} />
-                </div>
-                <div>
-                  <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-200">
-                    {currentOption.name}
-                  </h1>
-                  <p className="text-slate-600 dark:text-slate-400">
-                    {currentOption.description}
-                  </p>
-                </div>
-              </motion.div>
-            </div>
-          </div>
-
-          {/* Component Content */}
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={selectedData}
-                initial={{ opacity: 0, y: 20, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -20, scale: 0.98 }}
-                transition={{ 
-                  duration: 0.4,
-                  ease: "easeInOut"
-                }}
-                className="relative"
-              >
-                {/* Animated background for current component */}
-                <div className={`absolute inset-0 -z-10 opacity-5 bg-gradient-to-br ${currentOption.gradient} rounded-3xl blur-3xl`}></div>
-                
-                <CurrentComponent />
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        </motion.main>
-
-        {/* Footer */}
-        <motion.footer 
-          className="border-t border-slate-200/50 dark:border-slate-700/50 bg-white/50 dark:bg-slate-900/50 backdrop-blur-lg"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
-        >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div className="flex flex-col lg:flex-row justify-between items-center space-y-6 lg:space-y-0">
-              {/* Brand */}
-              <motion.div 
-                className="flex items-center space-x-4"
-                whileHover={{ scale: 1.02 }}
-                transition={{ type: "spring", stiffness: 400 }}
-              >
-                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-xl flex items-center justify-center shadow-lg">
-                  <Cpu className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <p className="font-semibold text-slate-800 dark:text-slate-200">
-                    Nexus Dashboard
-                  </p>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
-                    Built with modern technologies
-                  </p>
-                </div>
-              </motion.div>
-
-              {/* Links */}
-              <div className="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-8 text-sm">
-                <div className="flex items-center space-x-6 text-slate-600 dark:text-slate-400">
-                  <div className="flex items-center space-x-2">
-                    <Satellite className="w-4 h-4 text-green-500" />
-                    <span>Live APIs</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <BarChart3 className="w-4 h-4 text-blue-500" />
-                    <span>Real-time Data</span>
-                  </div>
-                </div>
-                
-                <div className="h-4 w-px bg-slate-300 dark:bg-slate-600 hidden sm:block"></div>
-                
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  className="text-center sm:text-left"
-                >
-                  <p className="text-slate-600 dark:text-slate-400">
-                    Crafted by{' '}
-                    <a
-                      href="https://abiddasurkar.github.io/portfolio/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="font-semibold bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent hover:from-purple-600 hover:to-blue-600 transition-all"
-                    >
-                      Abid Dasurkar
-                    </a>
-                  </p>
-                </motion.div>
-              </div>
-            </div>
-            
-            {/* Bottom Bar */}
+          <div className="p-4 border-t border-orange-500/20 space-y-3 bg-gradient-to-b from-slate-900/50 to-slate-950/50">
             <motion.div 
-              className="mt-8 pt-6 border-t border-slate-200/50 dark:border-slate-700/50 text-center"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1 }}
+              className="flex items-center space-x-2 text-xs text-slate-400 px-2"
+              animate={{ opacity: [0.6, 1, 0.6] }}
+              transition={{ duration: 2.5, repeat: Infinity }}
             >
-              <p className="text-xs text-slate-500 dark:text-slate-500">
-                Powered by public APIs • No authentication required • Built with React & Tailwind CSS
-              </p>
+              <motion.div className="w-2 h-2 bg-gradient-to-r from-emerald-400 to-cyan-500 rounded-full" animate={{ scale: [1, 1.3, 1] }} transition={{ duration: 1.5, repeat: Infinity }} />
+              <span>Live Updates Active</span>
             </motion.div>
+            <div className="flex space-x-2">
+              <a
+                href="https://github.com/abiddasurkar"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 p-2 rounded-lg bg-slate-800/50 hover:bg-gradient-to-br hover:from-orange-600/30 hover:to-pink-600/30 transition-all backdrop-blur-sm border border-slate-700/50 flex items-center justify-center group"
+              >
+                <motion.div whileHover={{ scale: 1.2, rotate: 10 }} whileTap={{ scale: 0.9 }}>
+                  <Github className="w-4 h-4 text-slate-400 group-hover:text-orange-300 transition-colors" />
+                </motion.div>
+              </a>
+              <a
+                href="https://www.linkedin.com/in/abiddasurkar"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 p-2 rounded-lg bg-slate-800/50 hover:bg-gradient-to-br hover:from-orange-600/30 hover:to-pink-600/30 transition-all backdrop-blur-sm border border-slate-700/50 flex items-center justify-center group"
+              >
+                <motion.div whileHover={{ scale: 1.2, rotate: 10 }} whileTap={{ scale: 0.9 }}>
+                  <Linkedin className="w-4 h-4 text-slate-400 group-hover:text-orange-300 transition-colors" />
+                </motion.div>
+              </a>
+            </div>
           </div>
-        </motion.footer>
+        </motion.aside>
+
+        {/* Main Content */}
+        <div className="flex flex-col flex-1 overflow-hidden">
+          {/* Header */}
+          <header className="sticky top-0 z-40 bg-gradient-to-r from-slate-950/50 via-slate-900/50 to-slate-950/50 backdrop-blur-2xl border-b border-orange-500/20 shadow-2xl">
+            <div className="px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+              {/* Mobile Menu Button */}
+              <motion.button
+                whileHover={{ scale: 1.08 }}
+                whileTap={{ scale: 0.92 }}
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="lg:hidden p-2 rounded-lg bg-slate-800/50 hover:bg-gradient-to-br hover:from-orange-600/30 hover:to-pink-600/30 backdrop-blur-sm border border-slate-700/50 transition-all"
+              >
+                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </motion.button>
+
+              {/* Header Title */}
+              <motion.div 
+                className="flex-1 ml-4 lg:ml-0"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+              >
+                <motion.h1 
+                  key={selectedData}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-3xl font-bold bg-gradient-to-r from-orange-300 via-pink-300 to-rose-300 bg-clip-text text-transparent"
+                >
+                  {currentOption.name}
+                </motion.h1>
+                <p className="text-sm text-cyan-300/80">{currentOption.description}</p>
+              </motion.div>
+
+              {/* Header Controls */}
+              <div className="flex items-center space-x-3">
+                <motion.div 
+                  className="hidden sm:flex items-center space-x-2 px-3 py-1 bg-gradient-to-r from-slate-900/50 to-slate-800/50 rounded-lg border border-cyan-500/30 backdrop-blur-sm"
+                  animate={{ opacity: [0.7, 1, 0.7] }}
+                  transition={{ duration: 2.5, repeat: Infinity }}
+                >
+                  <motion.div 
+                    className="w-2 h-2 bg-gradient-to-r from-emerald-400 to-cyan-500 rounded-full"
+                    animate={{ scale: [1, 1.3, 1] }}
+                    transition={{ duration: 1, repeat: Infinity }}
+                  />
+                  <span className="text-xs text-slate-300">Live Feed</span>
+                </motion.div>
+
+                <motion.button
+                  whileHover={{ scale: 1.08, rotate: 20 }}
+                  whileTap={{ scale: 0.92 }}
+                  onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                  className="p-2 rounded-lg bg-slate-800/50 hover:bg-gradient-to-br hover:from-orange-600/30 hover:to-pink-600/30 backdrop-blur-sm border border-slate-700/50 transition-all text-xl"
+                >
+                  {theme === 'dark' ? '🌞' : '🌙'}
+                </motion.button>
+              </div>
+            </div>
+          </header>
+
+          {/* Page Content */}
+          <main className="flex-1 overflow-auto">
+            <div className="px-4 sm:px-6 lg:px-8 py-8">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={selectedData}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.4 }}
+                  className="mb-8"
+                >
+                  <CurrentComponent />
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </main>
+
+          {/* Footer */}
+          <footer className="border-t border-orange-500/20 bg-gradient-to-r from-slate-950/50 via-slate-900/50 to-slate-950/50 backdrop-blur-lg px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex flex-col sm:flex-row justify-between items-center space-y-2 sm:space-y-0 text-xs text-slate-400">
+              <p>
+                Built by{' '}
+                <a
+                  href="https://abiddasurkar.github.io/portfolio/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-gradient-to-r from-orange-300 to-pink-300 bg-clip-text text-transparent hover:brightness-150 transition-all font-semibold"
+                >
+                  Abid Dasurkar
+                </a>
+              </p>
+              <div className="flex space-x-4">
+                <span>Public APIs</span>
+                <span>•</span>
+                <span>No tokens required</span>
+              </div>
+            </div>
+          </footer>
+        </div>
       </div>
 
-      {/* Mobile Sidebar Overlay */}
-      {sidebarOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
+      {/* Mobile Menu Overlay */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMobileMenuOpen(false)}
+              className="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm lg:hidden"
+            />
+            <motion.div
+              initial={{ x: -280 }}
+              animate={{ x: 0 }}
+              exit={{ x: -280 }}
+              transition={{ type: 'spring', damping: 20 }}
+              className="fixed left-0 top-0 h-screen w-72 z-40 bg-gradient-to-b from-slate-950/95 via-slate-900/95 to-slate-950/95 backdrop-blur-2xl border-r border-orange-500/20 shadow-2xl overflow-y-auto"
+            >
+              <div className="p-6 border-b border-orange-500/20">
+                <div className="flex items-center space-x-3">
+                  <div className={`w-10 h-10 bg-gradient-to-br ${designSystem.primary} rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/50`}>
+                    <Zap className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold bg-gradient-to-r from-orange-300 to-pink-300 bg-clip-text text-transparent">Nexus</h2>
+                    <p className="text-xs text-slate-400">Analytics</p>
+                  </div>
+                </div>
+              </div>
+
+              <nav className="p-4 space-y-2">
+                {dataOptions.map((option) => (
+                  <motion.button
+                    key={option.id}
+                    onClick={() => {
+                      setSelectedData(option.id);
+                      setMobileMenuOpen(false);
+                    }}
+                    whileHover={{ x: 4 }}
+                    className={`w-full flex items-center space-x-4 px-4 py-3 rounded-xl transition-all relative overflow-hidden ${
+                      selectedData === option.id
+                        ? 'text-white'
+                        : 'text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    {selectedData === option.id && (
+                      <motion.div
+                        className={`absolute inset-0 bg-gradient-to-r ${designSystem.primary} opacity-30`}
+                        layoutId="mobile-active"
+                      />
+                    )}
+                    <option.icon className="w-5 h-5 relative z-10" />
+                    <div className="text-left relative z-10">
+                      <p className="font-semibold text-sm">{option.name}</p>
+                      <p className="text-xs opacity-70">{option.description}</p>
+                    </div>
+                  </motion.button>
+                ))}
+              </nav>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
