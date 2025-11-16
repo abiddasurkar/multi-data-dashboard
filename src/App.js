@@ -146,6 +146,13 @@ function App() {
 
   const dataOptions = [
     { 
+      id: 'news', 
+      name: 'Tech News', 
+      icon: Newspaper,
+      description: 'Latest tech headlines',
+      component: NewsView
+    },
+    { 
       id: 'crypto', 
       name: 'Cryptocurrency', 
       icon: TrendingUp,
@@ -173,13 +180,7 @@ function App() {
       description: 'World population data',
       component: CountriesView
     },
-    { 
-      id: 'news', 
-      name: 'Tech News', 
-      icon: Newspaper,
-      description: 'Latest tech headlines',
-      component: NewsView
-    }
+    
   ];
 
   const currentOption = dataOptions.find(opt => opt.id === selectedData);
